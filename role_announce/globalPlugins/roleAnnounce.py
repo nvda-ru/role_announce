@@ -23,8 +23,11 @@ def initConfig():
 def addSettingsDialogItem():
 	prefsMenuItem  = gui.mainFrame.sysTrayIcon.preferencesMenu.Append(wx.ID_ANY, _("role announce..."))
 	gui.mainFrame.sysTrayIcon.Bind(wx.EVT_MENU, lambda e: gui.mainFrame._popupSettingsDialog(PreferencesDialog), prefsMenuItem)
+	return prefsMenuItem
+
 initConfig()
-addSettingsDialogItem()
+prefsMenuItem = addSettingsDialogItem()
+
 addonHandler.initTranslation()
 
 
@@ -52,7 +55,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		obj = api.getNavigatorObject()
 		if config.conf["roleannounce"]["sounds"]:
 			self.playSound(obj.role)
-		ui.message(controlTypes.roleLabels[obj.role])
+		ui.message(obj.role.displayString)
+	def terminate(self):
+		gui.mainFrame.sysTrayIcon.preferencesMenu.Delete(prefsMenuItem.GetId())
 	__gestures={
 		"kb:shift+nvda+q": "announce",
 }
